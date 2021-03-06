@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 import datetime
 import requests
 import json
+import pandas as pd
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 # Aqui vão algumas variáveis cujos valores você deve preencher.
@@ -42,9 +43,11 @@ def get_from_sheets(spreadsheet_id, range_name):
     """Uses the Google Sheets API to get the data in a Spreadsheet and return it as a data structure.
     Takes the Spreadsheet's ID and range of the data within the Spreadsheet as arguments.
     The data structure is a list of lists. The internal lists are the rows, and each item in it is a cell.
+
     Args:
         spreadsheet_id (str): A sequence of characters that identifies the file. Can be copied from the URL of the Spreadsheet.
         range_name (str): The range in which the data is contained. Usually of the format 'A1:Z26', but can also be a named range.
+
     Returns:
         headers (list): A list containing the headers of the list. 
         values (list): A data structure containing the spreadsheet's contents.
@@ -86,10 +89,12 @@ def get_from_sheets(spreadsheet_id, range_name):
 def safe_read(sheet, spreadsheet_id, range_name):
     """ Reads and returns the data from the spreadsheet. The API ignores empty cells at the end of intervals, this function corrects that.
         Takes as arguments the connection to the sheet, the spreadsheet's id and the range of the data.
+
     Args:
         sheet (object): The sheet object returned by the method .spreadsheets() which was used on the build of the API .
         spreadsheet_id (str): A sequence of characters that identifies the file. Can be copied from the URL of the Spreadsheet.
         range_name (str): The range in which the data is contained. Usually of the format 'A1:Z26', but can also be a named range.
+
     Returns:
         list: The data on the sheet. Corrected to contain also the empty cells.
     """
@@ -107,10 +112,12 @@ def safe_read(sheet, spreadsheet_id, range_name):
 
 def _safe_read(data, r, c):
     """ Returns the correct value for a cell. Returns an empty value if the cell was not created.
+
     Args:
         data (object): The data structure (list of lists) created as taken from the API. It may contain errors such as ignoring empty cells.
         r (int): The row of the cell.
         c (int): The column of the cell.
+
     Returns:
         (object): The correct value a cell must have. Whether it is the same as in 'data' or an empty value.
     """
@@ -125,8 +132,10 @@ def _safe_read(data, r, c):
 
 def get_board_id(board_name) -> str:
     """Takes the name of the board whose id we wish to find as an argument, and returns the board's id. 
+
     Args:
         board_name (str): The name of the board. 
+
     Returns:
         str: A sequence of characters which uniquely identifies the board within a member's account.
     """
@@ -148,9 +157,11 @@ def get_list_id(board_id, list_name) -> str:
         lists in a board and then performs a brute force comparision of all the lists in order to 
         find the one with the correct name. If the API changes this in the future, it would be better
         to update the fucntion to work similarly to the get_board_id function.
+
     Args:
         board_id (str): The id of the board that contains the list whose id we are searching.
         list_name (str): The name of the list whose id we wish to find.
+
     Returns:
         str: A sequence of characters which uniquely identifies the list within a board. 
     """
@@ -185,6 +196,7 @@ def get_labels(board_id):
 
 def post_card(list_id, name, due, macro, subsistema=None):
     """Creates a card within the selected list. 
+
     Args:
         list_id (str): A string that uniquely represents the list in which the card will be created. 
         name (str): The name of the card.
@@ -231,12 +243,68 @@ def post_card(list_id, name, due, macro, subsistema=None):
         requests.post(url, params=params)
 
 
+def get_list(id_board):
+    url = f"https://api.trello.com/1/boards/{id_board}/lists"
+
+    query = {
+        'key': KEY,
+        'token': TOKEN
+    }
+
+    response = requests.request(
+        "GET",
+        url,
+        params=query
+    )
+
+    lists = json.loads(response.text)
+    lists_dict = {}
+    for item in lists:
+        lists_dict[item['name']] = item['id']
+
+    return lists_dict
+
+
+def get_cards(id_board):
+
+    url = f"https://api.trello.com/1/boards/{id_board}/cards"
+
+    query = {
+        'key': KEY,
+        'token': TOKEN
+    }
+
+    response = requests.request(
+        "GET",
+        url,
+        params=query
+    )
+
+    cards = json.loads(response.text)
+    cards_names = []
+    lists = get_list(id_board)
+
+    for card in cards:
+        if card['idList'] == lists['Informações e códigos'] or card['idList'] == lists['ORCs (OKRs) iniciados']:
+            continue
+        cards_names.append(card['name'])
+
+    return cards_names
+
+
+def filtragem(data_from_sheets, board_id):
+    cards = get_cards(board_id)
+
+    return data_from_sheets[~data_from_sheets['Micro-tarefa'].isin(cards)]
+
+
 if __name__ == '__main__':
     board_id = get_board_id(BOARD_NAME)
     labels = get_labels(board_id)
     list_id = get_list_id(board_id, LIST_NAME)
 
     headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
-    for value in values:
-        subsistema, macro, tarefa, entrega = value
-        post_card(list_id, name=tarefa, due=entrega, macro=macro, subsistema=subsistema)
+    data_from_sheets = pd.DataFrame(values, columns=headers)
+    data_from_sheets = filtragem(data_from_sheets, board_id)
+
+    data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'], macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)
