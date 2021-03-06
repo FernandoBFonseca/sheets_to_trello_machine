@@ -18,7 +18,7 @@ SPREADSHEET_ID =  # TODO: create a file that contains this info and a function t
 RANGE_NAME = 'Página1!A1:D1000'
 
 # A chave de sua conta no Trello. Para encontrar acesse https://trello.com/app-key .
-KEY =  # TODO: create a file that contains this info and a function to retrieve it.
+KEY =   # TODO: create a file that contains this info and a function to retrieve it.
 # O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key, clique no hiperlink "Token" e na página que irá se abrir clique em "Permitir".
 TOKEN =  # TODO create a file that contains the infos and a function to retrieve it.
 # O nome do Quadro em que as tarefas serão adicionadas.
@@ -165,17 +165,9 @@ def get_list_id(board_id, list_name) -> str:
     Returns:
         str: A sequence of characters which uniquely identifies the list within a board. 
     """
-    url = f'https://api.trello.com/1/board/{board_id}/lists'
-    params = {
-        'fields': 'name',
-        'key': KEY,
-        'token': TOKEN
-    }
-    r = requests.get(url, params=params)
-    rr = list(r.json())
-    for item in rr:
-        if item['name'] == list_name:
-            return item['id']
+    lists_dict = get_lists(board_id)
+
+    return lists_dict[list_name]
 
 
 def get_labels(board_id):
@@ -243,10 +235,11 @@ def post_card(list_id, name, due, macro, subsistema=None):
         requests.post(url, params=params)
 
 
-def get_list(id_board):
+def get_lists(id_board):
     url = f"https://api.trello.com/1/boards/{id_board}/lists"
 
     query = {
+        'fields': 'name',
         'key': KEY,
         'token': TOKEN
     }
@@ -282,7 +275,7 @@ def get_cards(id_board):
 
     cards = json.loads(response.text)
     cards_names = []
-    lists = get_list(id_board)
+    lists = get_lists(id_board)
 
     for card in cards:
         if card['idList'] == lists['Informações e códigos'] or card['idList'] == lists['ORCs (OKRs) iniciados']:
