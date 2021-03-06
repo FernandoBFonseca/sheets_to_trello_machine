@@ -8,6 +8,7 @@ import datetime
 import requests
 import json
 import pandas as pd
+import pprint
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 # Aqui vão algumas variáveis cujos valores você deve preencher.
@@ -18,9 +19,9 @@ SPREADSHEET_ID =  # TODO: create a file that contains this info and a function t
 RANGE_NAME = 'Página1!A1:D1000'
 
 # A chave de sua conta no Trello. Para encontrar acesse https://trello.com/app-key .
-KEY =   # TODO: create a file that contains this info and a function to retrieve it.
+KEY = ''  # TODO: create a file that contains this info and a function to retrieve it.
 # O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key, clique no hiperlink "Token" e na página que irá se abrir clique em "Permitir".
-TOKEN =  # TODO create a file that contains the infos and a function to retrieve it.
+TOKEN = ''  # TODO create a file that contains the infos and a function to retrieve it.
 # O nome do Quadro em que as tarefas serão adicionadas.
 BOARD_NAME = "Tarefas Elétrica"
 # O nome da Lista que as tarefas serão adicionadas.
@@ -249,8 +250,8 @@ def get_lists(id_board):
         url,
         params=query
     )
-
     lists = json.loads(response.text)
+
     lists_dict = {}
     for item in lists:
         lists_dict[item['name']] = item['id']
@@ -259,10 +260,19 @@ def get_lists(id_board):
 
 
 def get_cards(id_board):
+    """Gets all the cards within a Trello board.
+
+    Args:
+        id_board (str): The sequence of characters that uniquely represents a Trello board.
+
+    Returns:
+        [type]: A list with all the names of the cards.
+    """
 
     url = f"https://api.trello.com/1/boards/{id_board}/cards"
 
     query = {
+        'fields': 'name,idList',
         'key': KEY,
         'token': TOKEN
     }
@@ -272,21 +282,29 @@ def get_cards(id_board):
         url,
         params=query
     )
-
     cards = json.loads(response.text)
-    cards_names = []
+    cards_dict = {}
     lists = get_lists(id_board)
 
     for card in cards:
         if card['idList'] == lists['Informações e códigos'] or card['idList'] == lists['ORCs (OKRs) iniciados']:
             continue
-        cards_names.append(card['name'])
+        cards_dict[card['name']] = card['idList']
 
-    return cards_names
+    return cards_dict
 
 
 def filtragem(data_from_sheets, board_id):
-    cards = get_cards(board_id)
+    """Filters the data from the spreadsheet to only contain the tasks that haven't already been added to the Trello board.
+
+    Args:
+        data_from_sheets (DataFrame): A Pandas DataFrame object containing all the rows from the Spreadsheet.
+        board_id (str): The sequence of characters that uniquely represents a Trello board.
+
+    Returns:
+        [type]: A Pandas DataFrame object which only contains the tasks that haven't already been added to the Trello board.
+    """
+    cards = list(get_cards(board_id).keys())
     # comentário teste
     return data_from_sheets[~data_from_sheets['Micro-tarefa'].isin(cards)]
 
@@ -299,5 +317,4 @@ if __name__ == '__main__':
     headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
     data_from_sheets = pd.DataFrame(values, columns=headers)
     data_from_sheets = filtragem(data_from_sheets, board_id)
-
     data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'], macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)
