@@ -294,7 +294,7 @@ def get_cards(id_board):
 
 def filtragem(data_from_sheets, board_id):
     cards = get_cards(board_id)
-
+    # comentário teste
     return data_from_sheets[~data_from_sheets['Micro-tarefa'].isin(cards)]
 
 
