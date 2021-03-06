@@ -13,14 +13,14 @@ import pandas as pd
 # Aqui vão algumas variáveis cujos valores você deve preencher.
 
 # O ID do arquivo da planilha. É a longa sequência de números e letras no url. Encontrada logo após "/spreadsheets/d/", e não deve incluir os termos finais como "edit".
-SPREADSHEET_ID = '11H8zKYPdu94xVddPUD7RrxTQyozgkrL4ObYyemO-inQ'  # TODO: create a file that contains this info and a function to retrieve it.
+SPREADSHEET_ID =  # TODO: create a file that contains this info and a function to retrieve it.
 # O intervalo do qual os dados serão usados. O termo antes do ponto de exclamação é a planilha usada (dentro de um arquivo pode haver várias planilhas/abas). O termo após o ponto de exclamação pode ser um intervalo nomeado ou o intervalo tradicional do tipo "A2:E20".
 RANGE_NAME = 'Página1!A1:D1000'
 
 # A chave de sua conta no Trello. Para encontrar acesse https://trello.com/app-key .
-KEY = '084350f2d2d6c92e15085378e3d2db85'  # TODO: create a file that contains this info and a function to retrieve it.
+KEY =  # TODO: create a file that contains this info and a function to retrieve it.
 # O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key, clique no hiperlink "Token" e na página que irá se abrir clique em "Permitir".
-TOKEN = '8f56d9b207e9523dccc1ee44330b1a8ff4771980dda82161390c3871dc7cb3f2'  # TODO create a file that contains the infos and a function to retrieve it.
+TOKEN =  # TODO create a file that contains the infos and a function to retrieve it.
 # O nome do Quadro em que as tarefas serão adicionadas.
 BOARD_NAME = "Tarefas Elétrica"
 # O nome da Lista que as tarefas serão adicionadas.
