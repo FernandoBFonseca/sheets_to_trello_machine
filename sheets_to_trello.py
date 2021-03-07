@@ -14,14 +14,14 @@ import pprint
 # Aqui vão algumas variáveis cujos valores você deve preencher.
 
 # O ID do arquivo da planilha. É a longa sequência de números e letras no url. Encontrada logo após "/spreadsheets/d/", e não deve incluir os termos finais como "edit".
-SPREADSHEET_ID =  # TODO: create a file that contains this info and a function to retrieve it.
+# SPREADSHEET_ID =  # : create a file that contains this info and a function to retrieve it.
 # O intervalo do qual os dados serão usados. O termo antes do ponto de exclamação é a planilha usada (dentro de um arquivo pode haver várias planilhas/abas). O termo após o ponto de exclamação pode ser um intervalo nomeado ou o intervalo tradicional do tipo "A2:E20".
 RANGE_NAME = 'Página1!A1:D1000'
 
 # A chave de sua conta no Trello. Para encontrar acesse https://trello.com/app-key .
-KEY = ''  # TODO: create a file that contains this info and a function to retrieve it.
+# KEY = ''  # : create a file that contains this info and a function to retrieve it.
 # O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key, clique no hiperlink "Token" e na página que irá se abrir clique em "Permitir".
-TOKEN = ''  # TODO create a file that contains the infos and a function to retrieve it.
+# TOKEN = ''  # Tcreate a file that contains the infos and a function to retrieve it.
 # O nome do Quadro em que as tarefas serão adicionadas.
 BOARD_NAME = "Tarefas Elétrica"
 # O nome da Lista que as tarefas serão adicionadas.
