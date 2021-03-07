@@ -13,17 +13,12 @@ import pprint
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 # Aqui vão algumas variáveis cujos valores você deve preencher.
 
-# O ID do arquivo da planilha. É a longa sequência de números e letras no url. Encontrada logo após "/spreadsheets/d/", e não deve incluir os termos finais como "edit".
-# SPREADSHEET_ID =  # : create a file that contains this info and a function to retrieve it.
 # O intervalo do qual os dados serão usados. O termo antes do ponto de exclamação é a planilha usada (dentro de um arquivo pode haver várias planilhas/abas). O termo após o ponto de exclamação pode ser um intervalo nomeado ou o intervalo tradicional do tipo "A2:E20".
 RANGE_NAME = 'Página1!A1:D1000'
 
-# A chave de sua conta no Trello. Para encontrar acesse https://trello.com/app-key .
-# KEY = ''  # : create a file that contains this info and a function to retrieve it.
-# O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key, clique no hiperlink "Token" e na página que irá se abrir clique em "Permitir".
-# TOKEN = ''  # Tcreate a file that contains the infos and a function to retrieve it.
 # O nome do Quadro em que as tarefas serão adicionadas.
 BOARD_NAME = "Tarefas Elétrica"
+
 # O nome da Lista que as tarefas serão adicionadas.
 LIST_NAME = "BACKLOG"
 
@@ -146,6 +141,7 @@ def get_board_id(board_name) -> str:
         'token': TOKEN,
         'query': {f'name:{BOARD_NAME}'}
     }
+
     url = f'https://api.trello.com/1/search'
     r = requests.get(url, params=params)
     return (r.json()['boards'][0]['id'])
@@ -173,12 +169,13 @@ def get_list_id(board_id, list_name) -> str:
 
 def get_labels(board_id):
     url = f'https://api.trello.com/1/boards/{board_id}/labels'
-    query = {
+    params = {
         'key': KEY,
         'token': TOKEN,
         'fields': 'name,color'
     }
-    response = requests.get(url, params=query)
+    response = requests.get(url, params=params)
+
     label_list = json.loads(response.text)
     labels_dict = {}
     for label in label_list:
@@ -239,17 +236,13 @@ def post_card(list_id, name, due, macro, subsistema=None):
 def get_lists(id_board):
     url = f"https://api.trello.com/1/boards/{id_board}/lists"
 
-    query = {
-        'fields': 'name',
+    params = {
         'key': KEY,
-        'token': TOKEN
+        'token': TOKEN,
+        'fields': 'name'
     }
 
-    response = requests.request(
-        "GET",
-        url,
-        params=query
-    )
+    response = requests.get(url, params=params)
     lists = json.loads(response.text)
 
     lists_dict = {}
@@ -271,17 +264,13 @@ def get_cards(id_board):
 
     url = f"https://api.trello.com/1/boards/{id_board}/cards"
 
-    query = {
-        'fields': 'name,idList',
+    params = {
         'key': KEY,
-        'token': TOKEN
+        'token': TOKEN,
+        'fields': 'name,idList'
     }
 
-    response = requests.request(
-        "GET",
-        url,
-        params=query
-    )
+    response = requests.get(url, params=params)
     cards = json.loads(response.text)
     cards_dict = {}
     lists = get_lists(id_board)
@@ -314,7 +303,10 @@ if __name__ == '__main__':
     labels = get_labels(board_id)
     list_id = get_list_id(board_id, LIST_NAME)
 
+    SPREADSHEET_ID, _, _ = gui.get_infos()
+
     headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
     data_from_sheets = pd.DataFrame(values, columns=headers)
     data_from_sheets = filtragem(data_from_sheets, board_id)
-    data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'], macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)
+    pprint.pprint(data_from_sheets)
+    # data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'], macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)

@@ -1,10 +1,10 @@
 import tkinter as tk
 from sheets_to_trello import *
 
-mainWindow = tk.Tk()
-mainWindow.title("Sheets To Trello Machine")
-mainWindow.geometry('640x480')
-mainWindow['padx'] = 8
+
+_id =
+_key =
+_token =
 
 
 def update_command():
@@ -16,8 +16,7 @@ def update_command():
     headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
     data_from_sheets = pd.DataFrame(values, columns=headers)
     data_from_sheets = filtragem(data_from_sheets, board_id)
-    print(data_from_sheets)
-    # data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'], macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)
+    pprint.pprint(data_from_sheets)
 
 
 def get_infos():
@@ -27,17 +26,18 @@ def get_infos():
     return spreadsheet_id, key, token
 
 
-def gui():
-    id_var = tk.StringVar()
+if __name__ == '__main__':
 
-    # canvas = tk.Canvas(mainWindow, width=640, height=480)
-    # canvas.pack()
+    mainWindow = tk.Tk()
+    mainWindow.title("Sheets To Trello Machine")
+    mainWindow.geometry('640x480')
+    mainWindow['padx'] = 8
 
     spreadsheet_id_label = tk.Label(mainWindow, text="Spreadsheet ID", relief='sunken', borderwidth=2)
     spreadsheet_id_instructions = tk.Label(mainWindow,
                                            text="O ID do arquivo da planilha. É a longa sequência de números e letras no url.\nEncontrada logo após '/spreadsheets/d/', e não deve incluir os termos finais como 'edit'.", relief='sunken', borderwidth=2)
     spreadsheet_id_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
-    spreadsheet_id = spreadsheet_id_entry.get()
+    spreadsheet_id_entry.insert(0, _id)
 
     spreadsheet_id_label.grid(row=0, column=0, sticky='nsew')
     spreadsheet_id_instructions.grid(row=0, column=1, sticky='nsew')
@@ -47,6 +47,7 @@ def gui():
     trello_key_instructions = tk.Label(mainWindow, text="A chave de sua conta no Trello. Para encontrar acesse\n"
                                        "https://trello.com/app-key", relief='sunken', borderwidth=2)
     trello_key_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
+    trello_key_entry.insert(0, _key)
 
     trello_key_label.grid(row=2, column=0, sticky='nsew')
     trello_key_instructions.grid(row=2, column=1, sticky='nswe')
@@ -56,12 +57,13 @@ def gui():
     trello_token_instructions = tk.Label(
         mainWindow, text="O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key,\n clique no hiperlink 'Token' e na página que irá se abrir clique em 'Permitir'.", relief='sunken', borderwidth=2)
     trello_token_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
+    trello_token_entry.insert(0, _token)
 
     trello_token_label.grid(row=4, column=0, sticky='nsew')
     trello_token_instructions.grid(row=4, column=1, sticky='nsew')
     trello_token_entry.grid(row=5, column=0, columnspan=2, sticky='nsew')
 
-    update = tk.Button(mainWindow, text='Update', command=update_command)
-    update.grid(row=6, column=1, sticky='se')
+    update_button = tk.Button(mainWindow, text='Update', command=update_command)
+    update_button.grid(row=6, column=1, sticky='se')
 
     mainWindow.mainloop()
