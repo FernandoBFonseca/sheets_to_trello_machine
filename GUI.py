@@ -7,7 +7,7 @@ mainWindow.geometry('640x480')
 mainWindow['padx'] = 8
 
 
-def update():
+def update_command():
     SPREADSHEET_ID, KEY, TOKEN = get_infos()
     board_id = get_board_id(BOARD_NAME)
     labels = get_labels(board_id)
@@ -27,45 +27,41 @@ def get_infos():
     return spreadsheet_id, key, token
 
 
-id_var = tk.StringVar()
+def gui():
+    id_var = tk.StringVar()
 
-# canvas = tk.Canvas(mainWindow, width=640, height=480)
-# canvas.pack()
+    # canvas = tk.Canvas(mainWindow, width=640, height=480)
+    # canvas.pack()
 
-spreadsheet_id_label = tk.Label(mainWindow, text="Spreadsheet ID", relief='sunken', borderwidth=2)
-spreadsheet_id_instructions = tk.Label(mainWindow,
-                                       text="O ID do arquivo da planilha. É a longa sequência de números e letras no url.\nEncontrada logo após '/spreadsheets/d/', e não deve incluir os termos finais como 'edit'.", relief='sunken', borderwidth=2)
-spreadsheet_id_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
-spreadsheet_id = spreadsheet_id_entry.get()
+    spreadsheet_id_label = tk.Label(mainWindow, text="Spreadsheet ID", relief='sunken', borderwidth=2)
+    spreadsheet_id_instructions = tk.Label(mainWindow,
+                                           text="O ID do arquivo da planilha. É a longa sequência de números e letras no url.\nEncontrada logo após '/spreadsheets/d/', e não deve incluir os termos finais como 'edit'.", relief='sunken', borderwidth=2)
+    spreadsheet_id_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
+    spreadsheet_id = spreadsheet_id_entry.get()
 
-spreadsheet_id_label.grid(row=0, column=0, sticky='nsew')
-spreadsheet_id_instructions.grid(row=0, column=1, sticky='nsew')
-spreadsheet_id_entry.grid(row=1, column=0, columnspan=2, sticky='nsew')
+    spreadsheet_id_label.grid(row=0, column=0, sticky='nsew')
+    spreadsheet_id_instructions.grid(row=0, column=1, sticky='nsew')
+    spreadsheet_id_entry.grid(row=1, column=0, columnspan=2, sticky='nsew')
 
+    trello_key_label = tk.Label(mainWindow, text="Trello Key", relief='sunken', borderwidth=2)
+    trello_key_instructions = tk.Label(mainWindow, text="A chave de sua conta no Trello. Para encontrar acesse\n"
+                                       "https://trello.com/app-key", relief='sunken', borderwidth=2)
+    trello_key_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
 
-trello_key_label = tk.Label(mainWindow, text="Trello Key", relief='sunken', borderwidth=2)
-trello_key_instructions = tk.Label(mainWindow, text="A chave de sua conta no Trello. Para encontrar acesse\n"
-                                   "https://trello.com/app-key", relief='sunken', borderwidth=2)
-trello_key_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
+    trello_key_label.grid(row=2, column=0, sticky='nsew')
+    trello_key_instructions.grid(row=2, column=1, sticky='nswe')
+    trello_key_entry.grid(row=3, column=0, columnspan=2, sticky='nsew')
 
+    trello_token_label = tk.Label(mainWindow, text="Trello Token", relief='sunken', borderwidth=2)
+    trello_token_instructions = tk.Label(
+        mainWindow, text="O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key,\n clique no hiperlink 'Token' e na página que irá se abrir clique em 'Permitir'.", relief='sunken', borderwidth=2)
+    trello_token_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
 
-trello_key_label.grid(row=2, column=0, sticky='nsew')
-trello_key_instructions.grid(row=2, column=1, sticky='nswe')
-trello_key_entry.grid(row=3, column=0, columnspan=2, sticky='nsew')
+    trello_token_label.grid(row=4, column=0, sticky='nsew')
+    trello_token_instructions.grid(row=4, column=1, sticky='nsew')
+    trello_token_entry.grid(row=5, column=0, columnspan=2, sticky='nsew')
 
+    update = tk.Button(mainWindow, text='Update', command=update_command)
+    update.grid(row=6, column=1, sticky='se')
 
-trello_token_label = tk.Label(mainWindow, text="Trello Token", relief='sunken', borderwidth=2)
-trello_token_instructions = tk.Label(
-    mainWindow, text="O Token de sua conta no Trello. Para encontrar acesse https://trello.com/app-key,\n clique no hiperlink 'Token' e na página que irá se abrir clique em 'Permitir'.", relief='sunken', borderwidth=2)
-trello_token_entry = tk.Entry(mainWindow, relief='sunken', borderwidth=2)
-
-
-trello_token_label.grid(row=4, column=0, sticky='nsew')
-trello_token_instructions.grid(row=4, column=1, sticky='nsew')
-trello_token_entry.grid(row=5, column=0, columnspan=2, sticky='nsew')
-
-update = tk.Button(mainWindow, text='Update', command=update)
-update.grid(row=6, column=1, sticky='se')
-
-
-mainWindow.mainloop()
+    mainWindow.mainloop()
