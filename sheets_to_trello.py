@@ -9,7 +9,7 @@ import requests
 import json
 import pandas as pd
 import pprint
-import gui_
+import gui
 
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ BOARD_NAME = "Tarefas Elétrica"
 # O nome da Lista que as tarefas serão adicionadas.
 LIST_NAME = "BACKLOG"
 
-_, KEY, TOKEN = gui_.get_infos()
+SPREADSHEET_ID, KEY, TOKEN = gui.get_from_file()
 
 subsistemas = {
     'Baterias': 'red',
@@ -171,7 +171,8 @@ def get_list_id(board_id, list_name) -> str:
     return lists_dict[list_name]
 
 
-def get_labels(board_id):
+def get_labels(board_name):
+    board_id = get_board_id(board_name)
     url = f'https://api.trello.com/1/boards/{board_id}/labels'
     params = {
         'key': KEY,
@@ -302,9 +303,11 @@ def filtragem(data_from_sheets, board_id):
     return data_from_sheets[~data_from_sheets['Micro-tarefa'].isin(cards)]
 
 
+labels = get_labels(BOARD_NAME)
+
+
 if __name__ == '__main__':
     board_id = get_board_id(BOARD_NAME)
-    labels = get_labels(board_id)
     list_id = get_list_id(board_id, LIST_NAME)
 
     # SPREADSHEET_ID, _, _ = gui.get_infos()

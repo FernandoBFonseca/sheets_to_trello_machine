@@ -1,25 +1,24 @@
 import tkinter as tk
 import os
 import json
-# from sheets_to_trello import *
+from sheets_to_trello import *
 
 
 def update_command():
     SPREADSHEET_ID, KEY, TOKEN = get_inputs().values()
-    # board_id = get_board_id(BOARD_NAME)
-    # labels = get_labels(board_id)
-    # list_id = get_list_id(board_id, LIST_NAME)
+    board_id = get_board_id(BOARD_NAME)
+    labels = get_labels(board_id)
+    list_id = get_list_id(board_id, LIST_NAME)
 
-    # headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
-    # data_from_sheets = pd.DataFrame(values, columns=headers)
-    # data_from_sheets = filtragem(data_from_sheets, board_id)
-    # pprint.pprint(data_from_sheets)
-    print(SPREADSHEET_ID)
-    print(KEY)
-    print(TOKEN)
+    headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
+    data_from_sheets = pd.DataFrame(values, columns=headers)
+    data_from_sheets = filtragem(data_from_sheets, board_id)
+    print(data_from_sheets)
+    data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'],
+                                                 macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)
 
 
-def get_previous():
+def get_from_file():
     if os.path.exists('infos.json'):
         with open("infos.json", "r") as read_file:
             info_dict = json.load(read_file)
@@ -39,9 +38,9 @@ def get_inputs():
     return info_dict
 
 
-_id, _key, _token = get_previous()
-
 if __name__ == '__main__':
+
+    _id, _key, _token = get_from_file()
 
     mainWindow = tk.Tk()
     mainWindow.title("Sheets To Trello Machine")
