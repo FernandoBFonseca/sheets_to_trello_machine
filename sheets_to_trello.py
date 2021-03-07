@@ -9,6 +9,8 @@ import requests
 import json
 import pandas as pd
 import pprint
+import gui_
+
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 # Aqui vão algumas variáveis cujos valores você deve preencher.
@@ -21,6 +23,8 @@ BOARD_NAME = "Tarefas Elétrica"
 
 # O nome da Lista que as tarefas serão adicionadas.
 LIST_NAME = "BACKLOG"
+
+_, KEY, TOKEN = gui_.get_infos()
 
 subsistemas = {
     'Baterias': 'red',
@@ -303,7 +307,7 @@ if __name__ == '__main__':
     labels = get_labels(board_id)
     list_id = get_list_id(board_id, LIST_NAME)
 
-    SPREADSHEET_ID, _, _ = gui.get_infos()
+    # SPREADSHEET_ID, _, _ = gui.get_infos()
 
     headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
     data_from_sheets = pd.DataFrame(values, columns=headers)

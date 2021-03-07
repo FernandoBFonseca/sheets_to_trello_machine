@@ -1,30 +1,45 @@
 import tkinter as tk
-from sheets_to_trello import *
-
-
-_id =
-_key =
-_token =
+import os
+import json
+# from sheets_to_trello import *
 
 
 def update_command():
-    SPREADSHEET_ID, KEY, TOKEN = get_infos()
-    board_id = get_board_id(BOARD_NAME)
-    labels = get_labels(board_id)
-    list_id = get_list_id(board_id, LIST_NAME)
+    SPREADSHEET_ID, KEY, TOKEN = get_inputs().values()
+    # board_id = get_board_id(BOARD_NAME)
+    # labels = get_labels(board_id)
+    # list_id = get_list_id(board_id, LIST_NAME)
 
-    headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
-    data_from_sheets = pd.DataFrame(values, columns=headers)
-    data_from_sheets = filtragem(data_from_sheets, board_id)
-    pprint.pprint(data_from_sheets)
+    # headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
+    # data_from_sheets = pd.DataFrame(values, columns=headers)
+    # data_from_sheets = filtragem(data_from_sheets, board_id)
+    # pprint.pprint(data_from_sheets)
+    print(SPREADSHEET_ID)
+    print(KEY)
+    print(TOKEN)
 
 
-def get_infos():
-    spreadsheet_id = spreadsheet_id_entry.get()
-    key = trello_key_entry.get()
-    token = trello_token_entry.get()
-    return spreadsheet_id, key, token
+def get_previous():
+    if os.path.exists('infos.json'):
+        with open("infos.json", "r") as read_file:
+            info_dict = json.load(read_file)
 
+    return info_dict.values()
+
+
+def get_inputs():
+    info_dict = {}
+    info_dict['spreadsheet_id'] = spreadsheet_id_entry.get()
+    info_dict['key'] = trello_key_entry.get()
+    info_dict['token'] = trello_token_entry.get()
+
+    with open('infos.json', 'w') as write_file:
+        json.dump(info_dict, write_file)
+
+    return info_dict
+
+
+_id, _key, _token = get_previous()
 
 if __name__ == '__main__':
 
