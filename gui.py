@@ -6,24 +6,38 @@ from sheets_to_trello import *
 
 def update_command():
     SPREADSHEET_ID, KEY, TOKEN = get_inputs().values()
+    message("Getting data from Trello")
     board_id = get_board_id(BOARD_NAME)
     labels = get_labels(board_id)
     list_id = get_list_id(board_id, LIST_NAME)
 
+    message("Getting data from Sheets")
     headers, values = get_from_sheets(SPREADSHEET_ID, RANGE_NAME)
+
+    message("Comparing to existing Trello cards")
     data_from_sheets = pd.DataFrame(values, columns=headers)
     data_from_sheets = filtragem(data_from_sheets, board_id)
+
+    message("Posting new cards in Trello")
     print(data_from_sheets)
     data_from_sheets.apply(lambda row: post_card(list_id, name=row['Micro-tarefa'], due=row['Entrega'],
                                                  macro=row['Macro-Tarefa'], subsistema=row['Subsistema']), axis=1)
+    message("All done")
+
+
+def message(text):
+    message = tk.Label(mainWindow, text=text, relief='sunken', borderwidth=2)
+    message.grid(row=7, column=0, columnspan=2, sticky='nsew')
 
 
 def get_from_file():
     if os.path.exists('infos.json'):
         with open("infos.json", "r") as read_file:
             info_dict = json.load(read_file)
-
-    return info_dict.values()
+        return info_dict.values()
+    else:
+        info_dict = get_inputs()
+        return info_dict.values()
 
 
 def get_inputs():
@@ -80,4 +94,5 @@ if __name__ == '__main__':
     update_button = tk.Button(mainWindow, text='Update', command=update_command)
     update_button.grid(row=6, column=1, sticky='se')
 
+    messages = tk.Label(mainWindow,)
     mainWindow.mainloop()

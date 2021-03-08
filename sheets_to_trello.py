@@ -16,7 +16,7 @@ import gui
 # Aqui vão algumas variáveis cujos valores você deve preencher.
 
 # O intervalo do qual os dados serão usados. O termo antes do ponto de exclamação é a planilha usada (dentro de um arquivo pode haver várias planilhas/abas). O termo após o ponto de exclamação pode ser um intervalo nomeado ou o intervalo tradicional do tipo "A2:E20".
-RANGE_NAME = 'Página1!A1:D1000'
+RANGE_NAME = 'Página1!A1:E1000'
 
 # O nome do Quadro em que as tarefas serão adicionadas.
 BOARD_NAME = "Tarefas Elétrica"
